@@ -61,7 +61,7 @@ jobs:
       - name: Upload Terraform Outputs
         uses: actions/upload-artifact@v4
         with:
-          name: infra-outputs # The name of the artifact
+          name: deploy # The name of the artifact
           path: terraform/terraform_outputs.json
 
           
