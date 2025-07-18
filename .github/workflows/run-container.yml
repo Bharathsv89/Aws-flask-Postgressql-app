@@ -42,6 +42,13 @@ jobs:
       - name: SSH into EC2 and run Docker
         run: |
           ssh -o StrictHostKeyChecking=no -i Python.pem ec2-user@${{ env.EC2_IP }} << EOF
+             # Install Docker
+           sudo yum update -y
+           sudo yum install -y docker
+           sudo systemctl enable docker
+           sudo systemctl start docker
+           sudo usermod -aG docker ec2-user
+           
             aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin ${{ env.ECR_REPO }}
             docker pull ${{ env.ECR_REPO }}:latest
             docker rm -f flask-app || true
