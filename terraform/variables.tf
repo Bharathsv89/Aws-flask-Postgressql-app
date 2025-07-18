@@ -16,7 +16,7 @@ variable "db_password" {
 variable "aws_account_id" {
   description = "AWS account ID"
   type        = string
-  default     = "164210724383"
+  default     = "565689724026"
   # Set this via terraform.tfvars or environment variable (e.g., TF_VAR_aws_account_id)
 }
 
