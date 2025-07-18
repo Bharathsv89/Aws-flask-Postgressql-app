@@ -31,7 +31,7 @@ resource "aws_ecr_repository" "greeting_app" {
 }
 
 resource "aws_instance" "flask_ec2" {
-  ami           = "ami-0c0a551d0459e9d39" # Ubuntu
+  ami           = "ami-0cfd99f6f360af6be" # Ubuntu
   instance_type = "t2.micro"
   subnet_id     = module.vpc.public_subnets[0]
   key_name      = "Python"
