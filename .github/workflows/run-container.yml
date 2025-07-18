@@ -6,6 +6,10 @@ on:
     types:
       - completed
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   run-docker:
     runs-on: ubuntu-latest
@@ -16,6 +20,8 @@ jobs:
         with:
           name: deploy
           path: ./outputs
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Use GITHUB_TOKEN for auth
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Parse Terraform Outputs
         id: vars
