@@ -22,8 +22,29 @@ def get_db_connection():
         password=DB_PASS
     )
 
+# 🔼 NEW FUNCTION TO CREATE TABLE IF NOT EXISTS
+def create_table_if_not_exists():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS greetings (
+                id SERIAL PRIMARY KEY,
+                username TEXT NOT NULL,
+                message TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"❌ Table creation failed: {e}")
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    create_table_if_not_exists()  # 🔼 ADDED THIS LINE
+
     if request.method == 'POST':
         username = request.form['username']
         greeting = f"Hello {username}!"
@@ -66,7 +87,6 @@ def show_usernames():
         usernames = cur.fetchall()
         cur.close()
         conn.close()
-        #return "<br>".join([u[0] for u in usernames])
         return render_template('usernames.html', usernames=[u[0] for u in usernames])
     except Exception as e:
         return f"❌ Error: {str(e)}"
@@ -99,4 +119,3 @@ def check_rows():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-    
