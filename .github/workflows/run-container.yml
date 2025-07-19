@@ -20,7 +20,7 @@ jobs:
         with:
           name: deploy
           path: ./outputs
-          github-token: ${{ secrets.GITHUB_TOKEN }} # Use GITHUB_TOKEN for auth
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 
       - name: Parse Terraform Outputs
@@ -41,21 +41,22 @@ jobs:
 
       - name: SSH into EC2 and run Docker
         run: |
-          ssh -o StrictHostKeyChecking=no -i Python.pem ec2-user@${{ env.EC2_IP }} << EOF
-             # Install Docker
-           sudo yum update -y
-           sudo yum install -y docker
-           sudo systemctl enable docker
-           sudo systemctl start docker
-           sudo usermod -aG docker ec2-user
-           sudo aws ecr get-login-password --region ca-central-1 | sudo docker login --username AWS --password-stdin ${{ env.ECR_REPO }}
-           sudo docker pull ${{ env.ECR_REPO }}:latest
-           sudo docker rm -f flask-app || true
-           sudo docker run -d -p 5000:5000 \
-          -e DB_HOST=${{ env.DB_HOST }} \
-          -e DB_NAME=greeting-db \
-          -e DB_USER=${{ secrets.DB_USERNAME }} \
-          -e DB_PASS=${{ secrets.DB_PASSWORD }} \
-          ${{ env.ECR_REPO }}:latest
-          EOF
+          ssh -o StrictHostKeyChecking=no -i Python.pem ec2-user@${{ env.EC2_IP }} << 'EOF'
+            sudo yum update -y
+            sudo yum install -y docker
+            sudo systemctl enable docker
+            sudo systemctl start docker
+            sudo usermod -aG docker ec2-user
 
+            aws ecr get-login-password --region ca-central-1 | docker login --username AWS --password-stdin ${{ env.ECR_REPO }}
+
+            docker pull ${{ env.ECR_REPO }}:latest
+            docker rm -f flask-app || true
+
+            docker run -d --name flask-app -p 5000:5000 \
+              -e DB_HOST=${{ env.DB_HOST }} \
+              -e DB_NAME=greeting-db \
+              -e DB_USER=${{ secrets.DB_USERNAME }} \
+              -e DB_PASS=${{ secrets.DB_PASSWORD }} \
+              ${{ env.ECR_REPO }}:latest
+          EOF
