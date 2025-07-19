@@ -55,7 +55,7 @@ jobs:
 
             docker run -d --name flask-app -p 5001:5000 \
               -e DB_HOST=${{ env.DB_HOST }} \
-              -e DB_NAME=greeting-db \
+              -e DB_NAME=greeting_db \
               -e DB_USER=${{ secrets.DB_USERNAME }} \
               -e DB_PASS=${{ secrets.DB_PASSWORD }} \
               ${{ env.ECR_REPO }}:latest
