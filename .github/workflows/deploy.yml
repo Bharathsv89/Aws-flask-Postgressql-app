@@ -42,8 +42,8 @@ jobs:
         run: |
           cd terraform
           terraform init -reconfigure
-          #terraform destroy -auto-approve
-          terraform apply -auto-approve
+          terraform destroy -auto-approve
+          #terraform apply -auto-approve
           terraform output -json > terraform_outputs.json
 
       - name: Build, Tag, and Push Docker image
