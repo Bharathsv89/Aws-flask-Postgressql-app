@@ -61,12 +61,12 @@ jobs:
             export PATH=$PATH:/home/ubuntu/.local/bin
 
             # Login to ECR
-            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ECR_REPO}
+            aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${ECR_REPO}
 
             # Pull and run container
-            docker pull ${ECR_REPO}:latest
-            docker rm -f flask-app || true
-            docker run -d --name flask-app -p 5001:5000 \
+           sudo docker pull ${ECR_REPO}:latest
+           sudo docker rm -f flask-app || true
+           sudo docker run -d --name flask-app -p 5001:5000 \
               -e DB_HOST=${DB_HOST} \
               -e DB_NAME=greetings_db \
               -e DB_USER=${DB_USERNAME} \
