@@ -41,7 +41,7 @@ jobs:
 
       - name: SSH into EC2 and run Docker
         run: |
-          ssh -o StrictHostKeyChecking=no -i rcb.pem ec2-user@${{ env.EC2_IP }} << EOF
+          ssh -o StrictHostKeyChecking=no -i rcb.pem ubuntu@${{ env.EC2_IP }} << EOF
             # Install Docker if not present
             sudo yum update -y
             sudo yum install -y docker
