@@ -36,12 +36,12 @@ jobs:
 
       - name: Setup SSH Key
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > Python.pem
-          chmod 600 Python.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" > rcb.pem
+          chmod 600 rcb.pem
 
       - name: SSH into EC2 and run Docker
         run: |
-          ssh -o StrictHostKeyChecking=no -i Python.pem ec2-user@${{ env.EC2_IP }} << EOF
+          ssh -o StrictHostKeyChecking=no -i rcb.pem ec2-user@${{ env.EC2_IP }} << EOF
             # Install Docker if not present
             sudo yum update -y
             sudo yum install -y docker
@@ -50,7 +50,7 @@ jobs:
             sudo usermod -aG docker ec2-user
 
             # ECR login
-            aws ecr get-login-password --region ca-central-1 | sudo docker login --username AWS --password-stdin ${ECR_REPO}
+            aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${ECR_REPO}
 
             # Pull and run the latest image
             sudo docker pull ${ECR_REPO}:latest
