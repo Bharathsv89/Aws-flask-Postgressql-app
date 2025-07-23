@@ -37,7 +37,7 @@ jobs:
       - name: Setup SSH Key
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > rcb.pem
-          chmod 600 rcb.pem
+          chmod 400 rcb.pem
 
       - name: SSH into EC2 and run Docker
         run: |
