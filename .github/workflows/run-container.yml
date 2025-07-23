@@ -65,7 +65,7 @@ jobs:
 
             # Pull and run container
            sudo docker pull ${ECR_REPO}:latest
-           sudo docker rm -f flask-app || true
+           #sudo docker rm -f flask-app || true
            sudo docker run -d --name flask-app -p 5001:5000 \
               -e DB_HOST=${DB_HOST} \
               -e DB_NAME=greetings_db \
