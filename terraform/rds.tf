@@ -23,7 +23,7 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-resource "aws_db_instance" "dbadmin" {
+resource "aws_db_instance" "postgres" {
   identifier         = "greeting-db"
   engine             = "postgres"
   instance_class     = "db.t3.micro"
