@@ -2,7 +2,7 @@ name: Deploy Flask App on EC2
 
 on:
   workflow_run:
-    workflows: [Deploy Flask App with Terraform]
+    workflows: ["Deploy Flask App with Terraform"]
     types:
       - completed
 
@@ -41,22 +41,29 @@ jobs:
 
       - name: SSH into EC2 and run Docker
         run: |
-          ssh -o StrictHostKeyChecking=no -i rcb.pem ubuntu@${{ env.EC2_IP }} << EOF
-            # Install Docker if not present
+          ssh -o StrictHostKeyChecking=no -i rcb.pem ubuntu@${{ env.EC2_IP }} << 'EOF'
+            # Update and install Docker and AWS CLI
             sudo apt update -y
-            sudo apt install -y docker
+            sudo apt install -y docker.io awscli
+
+            # Start Docker and add user to Docker group
             sudo systemctl enable docker
             sudo systemctl start docker
             sudo usermod -aG docker ubuntu
 
+            # Re-login group (optional, may require reboot)
+            newgrp docker <<EONG
+              echo "Now in docker group."
+            EONG
+
             # ECR login
-            aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin ${ECR_REPO}
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ECR_REPO}
 
             # Pull and run the latest image
-            sudo docker pull ${ECR_REPO}:latest
-            sudo docker rm -f flask-app || true
+            docker pull ${ECR_REPO}:latest
+            docker rm -f flask-app || true
 
-            sudo docker run -d --name flask-app -p 5001:5000 \
+            docker run -d --name flask-app -p 5001:5000 \
               -e DB_HOST=${DB_HOST} \
               -e DB_NAME=greetings_db \
               -e DB_USER=${DB_USERNAME} \
@@ -69,3 +76,4 @@ jobs:
           ECR_REPO: ${{ env.ECR_REPO }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
